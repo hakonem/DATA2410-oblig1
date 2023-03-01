@@ -7,9 +7,8 @@ serverSocket = socket(AF_INET, SOCK_STREAM)
 #Prepare a server socket
 serverSocket.bind(('',18881))       #bind socket to server address and port
 serverSocket.listen(1)              #listen for connection to socket
-
+print('Ready to serve...')
 while True:
-    print('Ready to serve...')
     connectionSocket,addr = serverSocket.accept()       #accept new connection request from client
     try:
         message = connectionSocket.recv(4096)           #receive request message from client
