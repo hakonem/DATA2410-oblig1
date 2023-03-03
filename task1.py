@@ -10,7 +10,7 @@ print('Ready to serve...')                              #print message when sock
 while True:
     connectionSocket,addr = serverSocket.accept()       #accept connection request from client and create new connection socket with info about the client (addr)
     try:
-        message = connectionSocket.recv(2048)           #receive GET request from client (max 2048 bytes), save to 'message' variable
+        message = connectionSocket.recv(1024)           #receive GET request from client (max 1024 bytes), save to 'message' variable
 
         #GET request arrives in following format: GET <path to file> HTTP/1.1\r\nHost: <host>\r\n\r\n
         
@@ -19,17 +19,14 @@ while True:
         outputdata = f.read()                           #read file and store contents in 'outputdata' variable
         f.close()                                       #close file
 
-        connectionSocket.send('HTTP/1.1 200 OK\r\n\r\n'.encode())    #If file is found, HTTP header line is sent to from connection socket to client
-
-        #Contents of the requested file sent to the client line by line in a for-loop
-        for i in range(0, len(outputdata)):
-            connectionSocket.send(outputdata[i].encode())
-        connectionSocket.send('\r\n'.encode())
-        connectionSocket.close()                        #close connection socket once HTML file is sent
+        connectionSocket.send('HTTP/1.1 200 OK\r\n\r\n'.encode())       #if file is found, HTTP header line is sent to from connection socket to client
+        connectionSocket.send(outputdata.encode() + '\r\n'.encode())    #contents of the requested file sent to the client 
+        connectionSocket.close()                                        #close connection socket once HTML file is sent
 
     #EXCEPTION HANDLING
     except IOError:
-        connectionSocket.send('HTTP/1.1 404 Not Found\r\n\r\n'.encode())     #If the file is not found, 404 message is returned instead
-        connectionSocket.close()                        #Close client socket once message sent
-serverSocket.close()                                    #Close server socket
-sys.exit()                                              #Terminate the program after sending the corresponding data
+        connectionSocket.send('HTTP/1.1 404 Not Found\r\n\r\n'.encode())     #if the file is not found, 404 message is returned instead
+        connectionSocket.close()                                             #close client socket once message sent
+
+serverSocket.close()                                    #close server socket
+sys.exit()                                              #terminate the program after sending the corresponding data
